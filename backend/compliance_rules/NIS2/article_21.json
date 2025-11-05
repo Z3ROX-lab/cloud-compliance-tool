@@ -1,0 +1,12 @@
+﻿{
+    "description":  "Journalisation des accÃ¨s (NIS2, Article 21)",
+    "id":  "NIS2_Article_21",
+    "checks":  [
+                   {
+                       "expected":  "IsLogging",
+                       "remediation":  "Activer CloudTrail",
+                       "command":  "aws cloudtrail get-trail-status --name default",
+                       "tool":  "aws_cloudtrail"
+                   }
+               ]
+}
