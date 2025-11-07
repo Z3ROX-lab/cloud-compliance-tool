@@ -1,0 +1,28 @@
+{
+    "id": "SecNumCloud_06_Data_Sovereignty",
+    "framework": "SecNumCloud",
+    "category": "Souveraineté et localisation des données",
+    "title": "Localisation des données en France/UE",
+    "description": "Les données doivent être hébergées en France ou dans l'Union Européenne conformément au référentiel SecNumCloud (exigence de souveraineté).",
+    "severity": "critical",
+    "remediation": [
+        "Vérifier que toutes les ressources sont déployées dans des régions EU (eu-west-1, eu-west-3, eu-central-1)",
+        "Restreindre la réplication inter-régions aux régions européennes uniquement",
+        "Configurer des politiques SCP pour bloquer la création de ressources hors UE",
+        "Documenter la localisation géographique de toutes les données"
+    ],
+    "references": [
+        "https://www.ssi.gouv.fr/uploads/2022/03/anssi-referentiel-secnumcloud-v3.2.pdf"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["S3Bucket", "RDSInstance", "EC2Instance", "EBSVolume"],
+    "checks": [
+        {
+            "type": "property",
+            "property": "region",
+            "operator": "contains",
+            "expected": "eu",
+            "description": "Les ressources doivent être dans une région européenne"
+        }
+    ]
+}

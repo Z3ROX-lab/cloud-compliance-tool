@@ -1,0 +1,26 @@
+{
+    "id": "NIS2_Article_21_Encryption",
+    "framework": "NIS2",
+    "category": "Article 21 - Cybersecurity Risk Management",
+    "title": "Chiffrement des données",
+    "description": "Les données sensibles doivent être chiffrées au repos et en transit conformément à l'Article 21 de la directive NIS2.",
+    "severity": "critical",
+    "remediation": [
+        "Activer le chiffrement pour tous les buckets S3",
+        "Activer le chiffrement pour tous les volumes EBS",
+        "Activer le chiffrement pour toutes les bases de données RDS",
+        "Utiliser des clés KMS pour gérer le chiffrement"
+    ],
+    "references": [
+        "https://eur-lex.europa.eu/eli/dir/2022/2555"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["S3Bucket", "EBSVolume", "RDSInstance", "EBSSnapshot"],
+    "checks": [
+        {
+            "type": "custom",
+            "check_name": "encryption",
+            "description": "Vérifier que le chiffrement est activé"
+        }
+    ]
+}

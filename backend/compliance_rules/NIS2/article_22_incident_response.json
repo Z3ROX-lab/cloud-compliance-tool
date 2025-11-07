@@ -1,0 +1,27 @@
+{
+    "id": "NIS2_Article_22_Incident_Response",
+    "framework": "NIS2",
+    "category": "Article 22 - Incident Reporting",
+    "title": "Capacités de détection et réponse aux incidents",
+    "description": "Les organisations doivent disposer de mécanismes de surveillance et d'alerte pour détecter les incidents de sécurité, conformément à l'Article 22 de la directive NIS2.",
+    "severity": "high",
+    "remediation": [
+        "Configurer CloudWatch Alarms pour surveiller les métriques critiques",
+        "Mettre en place AWS GuardDuty pour la détection de menaces",
+        "Configurer AWS Security Hub pour centraliser les alertes de sécurité",
+        "Définir un plan de réponse aux incidents documenté"
+    ],
+    "references": [
+        "https://eur-lex.europa.eu/eli/dir/2022/2555"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["CloudWatchAlarm"],
+    "checks": [
+        {
+            "type": "property",
+            "property": "metadata.actions_enabled",
+            "operator": "is_true",
+            "description": "Les alarmes CloudWatch doivent avoir des actions activées"
+        }
+    ]
+}

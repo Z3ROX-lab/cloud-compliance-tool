@@ -1,0 +1,39 @@
+{
+    "id": "SecNumCloud_03_Logging_Monitoring",
+    "framework": "SecNumCloud",
+    "category": "Traçabilité et supervision",
+    "title": "Journalisation et surveillance des événements de sécurité",
+    "description": "Un système de journalisation et de supervision doit être mis en place pour tracer les événements de sécurité conformément au référentiel SecNumCloud.",
+    "severity": "critical",
+    "remediation": [
+        "Activer CloudTrail dans toutes les régions",
+        "Activer la validation d'intégrité des logs CloudTrail",
+        "Centraliser les logs dans un emplacement sécurisé",
+        "Configurer des alertes pour les événements critiques",
+        "Conserver les logs pendant au moins 1 an"
+    ],
+    "references": [
+        "https://www.ssi.gouv.fr/uploads/2022/03/anssi-referentiel-secnumcloud-v3.2.pdf"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["CloudTrail", "S3Bucket"],
+    "checks": [
+        {
+            "type": "custom",
+            "check_name": "logging_enabled",
+            "description": "Vérifier que la journalisation est activée"
+        },
+        {
+            "type": "property",
+            "property": "metadata.is_multi_region_trail",
+            "operator": "is_true",
+            "description": "CloudTrail doit couvrir toutes les régions"
+        },
+        {
+            "type": "property",
+            "property": "metadata.log_file_validation_enabled",
+            "operator": "is_true",
+            "description": "La validation d'intégrité des logs doit être activée"
+        }
+    ]
+}
