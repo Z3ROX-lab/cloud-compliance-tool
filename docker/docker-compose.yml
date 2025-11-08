@@ -1,8 +1,74 @@
 ﻿version: '3.8'
+
 services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: compliance-db
+    environment:
+      POSTGRES_USER: compliance
+      POSTGRES_PASSWORD: compliance
+      POSTGRES_DB: compliance_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U compliance"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: compliance-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://compliance:compliance@db:5432/compliance_db
+      - AWS_REGION=eu-west-1
+      - DEBUG=true
+    volumes:
+      - ../backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+
+  # React Frontend
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: compliance-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+
+  # LocalStack for AWS emulation (optional for testing)
   localstack:
-    image: localstack/localstack
+    image: localstack/localstack:latest
+    container_name: compliance-localstack
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=s3,iam,cloudtrail
+      - SERVICES=s3,iam,cloudtrail,ec2,rds,lambda,kms
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - localstack_data:/tmp/localstack
+
+volumes:
+  postgres_data:
+  localstack_data:

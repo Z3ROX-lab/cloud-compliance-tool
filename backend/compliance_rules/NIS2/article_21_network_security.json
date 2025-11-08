@@ -1,0 +1,26 @@
+{
+    "id": "NIS2_Article_21_Network_Security",
+    "framework": "NIS2",
+    "category": "Article 21 - Cybersecurity Risk Management",
+    "title": "Sécurité réseau et segmentation",
+    "description": "Les ressources critiques ne doivent pas être exposées publiquement sans justification, conformément à l'Article 21 de la directive NIS2.",
+    "severity": "high",
+    "remediation": [
+        "Bloquer l'accès public aux buckets S3 contenant des données sensibles",
+        "Désactiver l'accès public aux bases de données RDS",
+        "Restreindre les Security Groups pour limiter les accès entrants",
+        "Utiliser des VPC privés pour les ressources critiques"
+    ],
+    "references": [
+        "https://eur-lex.europa.eu/eli/dir/2022/2555"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["S3Bucket", "RDSInstance", "EC2Instance"],
+    "checks": [
+        {
+            "type": "custom",
+            "check_name": "public_access",
+            "description": "Vérifier que les ressources ne sont pas publiquement accessibles"
+        }
+    ]
+}

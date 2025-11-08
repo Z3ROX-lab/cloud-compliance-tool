@@ -1,0 +1,39 @@
+{
+    "id": "NIS2_Article_21_Logging",
+    "framework": "NIS2",
+    "category": "Article 21 - Cybersecurity Risk Management",
+    "title": "Journalisation des accès et activités",
+    "description": "Les entités essentielles et importantes doivent mettre en place des mécanismes de journalisation pour enregistrer les accès aux systèmes et les activités critiques, conformément à l'Article 21 de la directive NIS2.",
+    "severity": "critical",
+    "remediation": [
+        "Activer CloudTrail dans toutes les régions AWS",
+        "Configurer la journalisation S3 pour tous les buckets sensibles",
+        "Activer les logs VPC Flow pour surveiller le trafic réseau",
+        "Centraliser les logs dans un système SIEM"
+    ],
+    "references": [
+        "https://eur-lex.europa.eu/eli/dir/2022/2555",
+        "https://www.enisa.europa.eu/topics/cybersecurity-policy/nis-directive-new"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["CloudTrail", "S3Bucket"],
+    "checks": [
+        {
+            "type": "custom",
+            "check_name": "logging_enabled",
+            "description": "Vérifier que la journalisation est activée"
+        },
+        {
+            "type": "property",
+            "property": "metadata.is_multi_region_trail",
+            "operator": "is_true",
+            "description": "CloudTrail doit être activé dans toutes les régions"
+        },
+        {
+            "type": "property",
+            "property": "metadata.log_file_validation_enabled",
+            "operator": "is_true",
+            "description": "La validation des fichiers de logs doit être activée"
+        }
+    ]
+}

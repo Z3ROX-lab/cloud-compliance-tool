@@ -1,0 +1,28 @@
+{
+    "id": "SecNumCloud_01_Data_Encryption",
+    "framework": "SecNumCloud",
+    "category": "Protection des données",
+    "title": "Chiffrement des données au repos",
+    "description": "Les données stockées doivent être chiffrées avec des algorithmes conformes aux recommandations de l'ANSSI (référentiel SecNumCloud v3.2).",
+    "severity": "critical",
+    "remediation": [
+        "Activer le chiffrement AES-256 pour tous les buckets S3",
+        "Activer le chiffrement pour tous les volumes EBS",
+        "Activer le chiffrement pour toutes les bases de données RDS",
+        "Utiliser AWS KMS avec des clés gérées par le client (CMK)",
+        "Utiliser des algorithmes conformes à l'ANSSI (AES-256, RSA-2048+)"
+    ],
+    "references": [
+        "https://www.ssi.gouv.fr/uploads/2022/03/anssi-referentiel-secnumcloud-v3.2.pdf",
+        "https://www.ssi.gouv.fr/guide/mecanismes-cryptographiques/"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["S3Bucket", "EBSVolume", "RDSInstance", "EBSSnapshot"],
+    "checks": [
+        {
+            "type": "custom",
+            "check_name": "encryption",
+            "description": "Vérifier que le chiffrement est activé avec des algorithmes conformes ANSSI"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "id": "NIS2_Article_23_Backup",
+    "framework": "NIS2",
+    "category": "Article 23 - Business Continuity",
+    "title": "Sauvegarde et restauration des données",
+    "description": "Les données critiques doivent être sauvegardées régulièrement avec des mécanismes de restauration testés, conformément à l'Article 23 de la directive NIS2.",
+    "severity": "high",
+    "remediation": [
+        "Activer les sauvegardes automatiques pour les bases de données RDS",
+        "Configurer AWS Backup pour centraliser les sauvegardes",
+        "Activer le versioning S3 pour les données critiques",
+        "Définir une politique de rétention des sauvegardes conforme aux exigences",
+        "Tester régulièrement les procédures de restauration"
+    ],
+    "references": [
+        "https://eur-lex.europa.eu/eli/dir/2022/2555"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["RDSInstance", "S3Bucket"],
+    "checks": [
+        {
+            "type": "property",
+            "property": "metadata.backup_retention_period",
+            "operator": "greater_than",
+            "expected": 7,
+            "description": "Les bases de données doivent avoir une période de rétention des sauvegardes d'au moins 7 jours"
+        }
+    ]
+}

@@ -1,0 +1,35 @@
+{
+    "id": "SecNumCloud_05_Backup_Recovery",
+    "framework": "SecNumCloud",
+    "category": "Sauvegarde et continuité",
+    "title": "Sauvegarde et plan de continuité d'activité",
+    "description": "Des sauvegardes régulières et testées doivent être mises en place conformément au référentiel SecNumCloud.",
+    "severity": "high",
+    "remediation": [
+        "Activer les sauvegardes automatiques pour les bases de données",
+        "Configurer une période de rétention conforme (minimum 30 jours recommandé)",
+        "Chiffrer les sauvegardes",
+        "Tester régulièrement les procédures de restauration",
+        "Dupliquer les sauvegardes dans une région secondaire"
+    ],
+    "references": [
+        "https://www.ssi.gouv.fr/uploads/2022/03/anssi-referentiel-secnumcloud-v3.2.pdf"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["RDSInstance", "S3Bucket"],
+    "checks": [
+        {
+            "type": "property",
+            "property": "metadata.backup_retention_period",
+            "operator": "greater_than",
+            "expected": 7,
+            "description": "La période de rétention des sauvegardes doit être suffisante"
+        },
+        {
+            "type": "property",
+            "property": "metadata.storage_encrypted",
+            "operator": "is_true",
+            "description": "Les sauvegardes doivent être chiffrées"
+        }
+    ]
+}

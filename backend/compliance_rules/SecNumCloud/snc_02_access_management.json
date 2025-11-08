@@ -1,0 +1,27 @@
+{
+    "id": "SecNumCloud_02_Access_Management",
+    "framework": "SecNumCloud",
+    "category": "Gestion des accès",
+    "title": "Authentification forte et gestion des accès",
+    "description": "Les accès aux ressources cloud doivent être protégés par une authentification forte (MFA) conformément au référentiel SecNumCloud.",
+    "severity": "critical",
+    "remediation": [
+        "Activer MFA pour tous les utilisateurs IAM privilégiés",
+        "Activer MFA pour le compte root AWS",
+        "Implémenter le principe du moindre privilège",
+        "Utiliser des rôles IAM avec des politiques restrictives",
+        "Auditer régulièrement les permissions IAM"
+    ],
+    "references": [
+        "https://www.ssi.gouv.fr/uploads/2022/03/anssi-referentiel-secnumcloud-v3.2.pdf"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["IAMUser", "IAMRole"],
+    "checks": [
+        {
+            "type": "custom",
+            "check_name": "mfa_enabled",
+            "description": "Vérifier que MFA est activé pour les utilisateurs IAM"
+        }
+    ]
+}

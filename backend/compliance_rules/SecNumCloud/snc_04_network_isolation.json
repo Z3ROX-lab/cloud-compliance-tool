@@ -1,0 +1,27 @@
+{
+    "id": "SecNumCloud_04_Network_Isolation",
+    "framework": "SecNumCloud",
+    "category": "Isolation et cloisonnement",
+    "title": "Isolation réseau et segmentation",
+    "description": "Les ressources doivent être isolées et segmentées pour limiter la propagation des incidents conformément au référentiel SecNumCloud.",
+    "severity": "high",
+    "remediation": [
+        "Utiliser des VPC dédiés pour isoler les environnements",
+        "Configurer des Security Groups restrictifs",
+        "Interdire l'accès public aux ressources critiques",
+        "Mettre en place des Network ACLs pour contrôler le trafic",
+        "Utiliser des sous-réseaux privés pour les ressources sensibles"
+    ],
+    "references": [
+        "https://www.ssi.gouv.fr/uploads/2022/03/anssi-referentiel-secnumcloud-v3.2.pdf"
+    ],
+    "cloud_providers": ["aws", "azure", "gcp"],
+    "resource_types": ["VPC", "SecurityGroup", "S3Bucket", "RDSInstance"],
+    "checks": [
+        {
+            "type": "custom",
+            "check_name": "public_access",
+            "description": "Vérifier que les ressources critiques ne sont pas publiquement accessibles"
+        }
+    ]
+}
