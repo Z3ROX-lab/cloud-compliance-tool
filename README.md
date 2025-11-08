@@ -13,16 +13,18 @@ Une solution open-source professionnelle pour auditer automatiquement la conform
 - **SecNumCloud** - Référentiel ANSSI v3.2
 - **Extensible** - Support futur pour ISO 27001, RGPD, HDS, PCI-DSS
 
-### ☁️ Multi-Cloud
-- **AWS** - Amazon Web Services (complet)
-- **Azure** - Microsoft Azure (en développement)
-- **GCP** - Google Cloud Platform (en développement)
+### ☁️ Multi-Cloud & Multi-Platform
+- **AWS** - Amazon Web Services (15+ types de ressources)
+- **Azure** - Microsoft Azure (10+ types de ressources) ✅
+- **GCP** - Google Cloud Platform (9+ types de ressources) ✅
+- **Kubernetes** - Clusters K8s (17+ types de ressources) ✅
 - **OVH, Scaleway** - Support prévu
 
 ### 🔍 Découverte Automatique
-- Scan complet de votre infrastructure cloud
-- Détection de 15+ types de ressources AWS
+- Scan complet de votre infrastructure multi-cloud
+- **50+ types de ressources** au total (AWS, Azure, GCP, K8s)
 - Cartographie interactive de l'architecture
+- Support des environnements hybrides (cloud + on-premise via K8s)
 - Analyse des dépendances entre ressources
 
 ### 📊 Analyse de Conformité

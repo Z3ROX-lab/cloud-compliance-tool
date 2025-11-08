@@ -62,9 +62,10 @@ function AuditRunner() {
               onChange={(e) => setProvider(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="aws">Amazon Web Services (AWS)</option>
-              <option value="azure" disabled>Microsoft Azure (Bientôt)</option>
-              <option value="gcp" disabled>Google Cloud Platform (Bientôt)</option>
+              <option value="aws">☁️ Amazon Web Services (AWS)</option>
+              <option value="azure">☁️ Microsoft Azure</option>
+              <option value="gcp">☁️ Google Cloud Platform (GCP)</option>
+              <option value="kubernetes">☸️ Kubernetes (K8s)</option>
             </select>
           </div>
 

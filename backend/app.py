@@ -14,6 +14,9 @@ from models import (
     ComplianceFramework, CloudProvider
 )
 from scanners.aws_scanner import AWSScanner
+from scanners.azure_scanner import AzureScanner
+from scanners.gcp_scanner import GCPScanner
+from scanners.kubernetes_scanner import KubernetesScanner
 from compliance.engine import ComplianceEngine
 
 # Configure structured logging
@@ -78,15 +81,25 @@ async def scan_cloud_account(
     access_key: Optional[str] = None,
     secret_key: Optional[str] = None,
     region: str = "eu-west-1",
+    subscription_id: Optional[str] = None,
+    tenant_id: Optional[str] = None,
+    client_id: Optional[str] = None,
+    client_secret: Optional[str] = None,
+    project_id: Optional[str] = None,
+    credentials_path: Optional[str] = None,
+    kubeconfig_path: Optional[str] = None,
+    context: Optional[str] = None,
     background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db)
 ):
     """
-    Scan cloud account to discover resources
+    Scan cloud account to discover resources (supports AWS, Azure, GCP, Kubernetes)
     """
     logger.info("Starting cloud scan", provider=provider, region=region)
 
     try:
+        resources = {}
+
         if provider.lower() == "aws":
             scanner = AWSScanner(
                 access_key=access_key or settings.AWS_ACCESS_KEY_ID,
@@ -95,17 +108,41 @@ async def scan_cloud_account(
             )
             resources = scanner.scan_all()
 
-            # Return discovered resources
-            return {
-                "status": "success",
-                "provider": provider,
-                "region": region,
-                "resources_discovered": {k: len(v) for k, v in resources.items()},
-                "total_resources": sum(len(v) for v in resources.values()),
-                "resources": resources
-            }
+        elif provider.lower() == "azure":
+            scanner = AzureScanner(
+                subscription_id=subscription_id or settings.AZURE_SUBSCRIPTION_ID,
+                tenant_id=tenant_id or settings.AZURE_TENANT_ID,
+                client_id=client_id or settings.AZURE_CLIENT_ID,
+                client_secret=client_secret or settings.AZURE_CLIENT_SECRET
+            )
+            resources = scanner.scan_all()
+
+        elif provider.lower() == "gcp":
+            scanner = GCPScanner(
+                project_id=project_id or settings.GCP_PROJECT_ID,
+                credentials_path=credentials_path or settings.GCP_CREDENTIALS_PATH
+            )
+            resources = scanner.scan_all()
+
+        elif provider.lower() == "kubernetes" or provider.lower() == "k8s":
+            scanner = KubernetesScanner(
+                kubeconfig_path=kubeconfig_path,
+                context=context
+            )
+            resources = scanner.scan_all()
+
         else:
-            raise HTTPException(status_code=400, detail=f"Provider {provider} not yet supported")
+            raise HTTPException(status_code=400, detail=f"Provider {provider} not supported. Supported: aws, azure, gcp, kubernetes")
+
+        # Return discovered resources
+        return {
+            "status": "success",
+            "provider": provider,
+            "region": region,
+            "resources_discovered": {k: len(v) for k, v in resources.items()},
+            "total_resources": sum(len(v) for v in resources.values()),
+            "resources": resources
+        }
 
     except Exception as e:
         logger.error("Cloud scan failed", error=str(e))
@@ -121,15 +158,25 @@ async def run_compliance_audit(
     access_key: Optional[str] = None,
     secret_key: Optional[str] = None,
     region: str = "eu-west-1",
+    subscription_id: Optional[str] = None,
+    tenant_id: Optional[str] = None,
+    client_id: Optional[str] = None,
+    client_secret: Optional[str] = None,
+    project_id: Optional[str] = None,
+    credentials_path: Optional[str] = None,
+    kubeconfig_path: Optional[str] = None,
+    context: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     """
-    Run a complete compliance audit
+    Run a complete compliance audit (supports AWS, Azure, GCP, Kubernetes)
     """
     logger.info("Starting compliance audit", framework=framework, provider=provider)
 
     try:
         # Step 1: Scan cloud resources
+        scanned_resources = {}
+
         if provider.lower() == "aws":
             scanner = AWSScanner(
                 access_key=access_key or settings.AWS_ACCESS_KEY_ID,
@@ -138,13 +185,36 @@ async def run_compliance_audit(
             )
             scanned_resources = scanner.scan_all()
 
-            # Flatten resources for evaluation
-            all_resources = []
-            for resource_type, resources in scanned_resources.items():
-                all_resources.extend(resources)
+        elif provider.lower() == "azure":
+            scanner = AzureScanner(
+                subscription_id=subscription_id or settings.AZURE_SUBSCRIPTION_ID,
+                tenant_id=tenant_id or settings.AZURE_TENANT_ID,
+                client_id=client_id or settings.AZURE_CLIENT_ID,
+                client_secret=client_secret or settings.AZURE_CLIENT_SECRET
+            )
+            scanned_resources = scanner.scan_all()
+
+        elif provider.lower() == "gcp":
+            scanner = GCPScanner(
+                project_id=project_id or settings.GCP_PROJECT_ID,
+                credentials_path=credentials_path or settings.GCP_CREDENTIALS_PATH
+            )
+            scanned_resources = scanner.scan_all()
+
+        elif provider.lower() == "kubernetes" or provider.lower() == "k8s":
+            scanner = KubernetesScanner(
+                kubeconfig_path=kubeconfig_path,
+                context=context
+            )
+            scanned_resources = scanner.scan_all()
 
         else:
-            raise HTTPException(status_code=400, detail=f"Provider {provider} not supported")
+            raise HTTPException(status_code=400, detail=f"Provider {provider} not supported. Supported: aws, azure, gcp, kubernetes")
+
+        # Flatten resources for evaluation
+        all_resources = []
+        for resource_type, resources in scanned_resources.items():
+            all_resources.extend(resources)
 
         # Step 2: Evaluate compliance
         audit_result = compliance_engine.evaluate_framework(all_resources, framework)
@@ -264,11 +334,21 @@ async def get_compliance_overview(
     provider: str = "aws",
     access_key: Optional[str] = None,
     secret_key: Optional[str] = None,
-    region: str = "eu-west-1"
+    region: str = "eu-west-1",
+    subscription_id: Optional[str] = None,
+    tenant_id: Optional[str] = None,
+    client_id: Optional[str] = None,
+    client_secret: Optional[str] = None,
+    project_id: Optional[str] = None,
+    credentials_path: Optional[str] = None,
+    kubeconfig_path: Optional[str] = None,
+    context: Optional[str] = None
 ):
-    """Get compliance overview with scores for all frameworks"""
+    """Get compliance overview with scores for all frameworks (supports AWS, Azure, GCP, Kubernetes)"""
     try:
         # Scan resources
+        scanned_resources = {}
+
         if provider.lower() == "aws":
             scanner = AWSScanner(
                 access_key=access_key or settings.AWS_ACCESS_KEY_ID,
@@ -277,9 +357,32 @@ async def get_compliance_overview(
             )
             scanned_resources = scanner.scan_all()
 
-            all_resources = []
-            for resource_type, resources in scanned_resources.items():
-                all_resources.extend(resources)
+        elif provider.lower() == "azure":
+            scanner = AzureScanner(
+                subscription_id=subscription_id or settings.AZURE_SUBSCRIPTION_ID,
+                tenant_id=tenant_id or settings.AZURE_TENANT_ID,
+                client_id=client_id or settings.AZURE_CLIENT_ID,
+                client_secret=client_secret or settings.AZURE_CLIENT_SECRET
+            )
+            scanned_resources = scanner.scan_all()
+
+        elif provider.lower() == "gcp":
+            scanner = GCPScanner(
+                project_id=project_id or settings.GCP_PROJECT_ID,
+                credentials_path=credentials_path or settings.GCP_CREDENTIALS_PATH
+            )
+            scanned_resources = scanner.scan_all()
+
+        elif provider.lower() == "kubernetes" or provider.lower() == "k8s":
+            scanner = KubernetesScanner(
+                kubeconfig_path=kubeconfig_path,
+                context=context
+            )
+            scanned_resources = scanner.scan_all()
+
+        all_resources = []
+        for resource_type, resources in scanned_resources.items():
+            all_resources.extend(resources)
 
         # Evaluate all frameworks
         frameworks_results = {}

@@ -7,12 +7,14 @@ function ArchitectureView() {
   const [resources, setResources] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedType, setSelectedType] = useState('all');
+  const [provider, setProvider] = useState('aws');
+  const [region, setRegion] = useState('eu-west-1');
 
   const scanResources = async () => {
     setLoading(true);
     try {
       const response = await axios.post(`${API_URL}/api/v1/cloud-accounts/scan`, null, {
-        params: { provider: 'aws', region: 'eu-west-1' }
+        params: { provider, region }
       });
       setResources(response.data);
     } catch (error) {
@@ -24,6 +26,7 @@ function ArchitectureView() {
 
   const getResourceIcon = (type) => {
     const icons = {
+      // AWS
       'ec2_instances': '🖥️',
       's3_buckets': '🪣',
       'iam_users': '👤',
@@ -36,6 +39,41 @@ function ArchitectureView() {
       'ebs_volumes': '💾',
       'kms_keys': '🔑',
       'load_balancers': '⚖️',
+      // Azure
+      'virtual_machines': '🖥️',
+      'storage_accounts': '💾',
+      'sql_databases': '🗄️',
+      'network_security_groups': '🛡️',
+      'virtual_networks': '🌐',
+      'key_vaults': '🔐',
+      'aks_clusters': '☸️',
+      'disks': '💿',
+      'public_ips': '🌍',
+      // GCP
+      'compute_instances': '🖥️',
+      'storage_buckets': '🪣',
+      'gke_clusters': '☸️',
+      'vpc_networks': '🌐',
+      'firewall_rules': '🛡️',
+      'compute_disks': '💿',
+      'sql_instances': '🗄️',
+      // Kubernetes
+      'namespaces': '📦',
+      'pods': '🐳',
+      'deployments': '🚀',
+      'services': '🔌',
+      'ingresses': '🚪',
+      'configmaps': '⚙️',
+      'secrets': '🔒',
+      'persistent_volumes': '💾',
+      'persistent_volume_claims': '📋',
+      'service_accounts': '👤',
+      'roles': '🎭',
+      'role_bindings': '🔗',
+      'cluster_roles': '👑',
+      'cluster_role_bindings': '🔗',
+      'network_policies': '🛡️',
+      'storage_classes': '💿',
     };
     return icons[type] || '📦';
   };
@@ -53,7 +91,7 @@ function ArchitectureView() {
 
       {!resources && (
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-center py-12">
+          <div className="text-center py-6">
             <span className="text-6xl mb-4 block">🏗️</span>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Découvrir votre Infrastructure
@@ -61,6 +99,41 @@ function ArchitectureView() {
             <p className="text-gray-600 mb-6">
               Scannez votre compte cloud pour visualiser toutes vos ressources
             </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                  Fournisseur Cloud
+                </label>
+                <select
+                  value={provider}
+                  onChange={(e) => setProvider(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="aws">☁️ AWS</option>
+                  <option value="azure">☁️ Azure</option>
+                  <option value="gcp">☁️ GCP</option>
+                  <option value="kubernetes">☸️ Kubernetes</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                  Région
+                </label>
+                <select
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="eu-west-1">EU West 1</option>
+                  <option value="eu-west-3">EU West 3</option>
+                  <option value="eu-central-1">EU Central 1</option>
+                  <option value="us-east-1">US East 1</option>
+                </select>
+              </div>
+            </div>
+
             <button
               onClick={scanResources}
               disabled={loading}
